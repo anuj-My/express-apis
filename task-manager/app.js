@@ -1,10 +1,12 @@
 console.log("Task Manager App");
 const express = require("express");
 const tasksRouter = require("./routes/tasks.js");
+const connectDB = require("./db.js");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const app = express();
-
-const port = 3000;
 
 app.use(express.json());
 
@@ -14,6 +16,17 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/tasks", tasksRouter);
 
-app.listen(port, () => {
-  console.log(`server is running on ${port}...`);
-});
+const port = process.env.PORT || 3000;
+
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGODB_URI);
+    app.listen(port, () => {
+      console.log(`server is running on ${port}...`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
